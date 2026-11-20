@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLUNOVA | Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/volunova-app.css">
+</head>
+<body class="pending">
+  <main class="main">
+    <div class="container">
+      <p class="crumb"><a href="volunova-home.html">Beranda</a> &rsaquo; Profile</p>
+      <h1>Profile</h1>
+      <p class="lead">Lengkapi data dirimu. Profil yang lengkap dibutuhkan untuk mendaftar kegiatan.</p>
+
+      <div id="notice" class="alert" role="alert" hidden></div>
+
+      <section class="card profile-head" aria-label="Ringkasan akun">
+        <div class="avatar" id="avatar" aria-hidden="true">?</div>
+        <div>
+          <h2 id="pName"></h2>
+          <p id="pEmail" style="color:var(--muted)"></p>
+          <div class="chips" id="badges"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="ttlInfo">
+        <div class="card-head">
+          <h2 id="ttlInfo">Informasi Pribadi</h2>
+          <button type="button" class="btn btn-outline btn-sm" id="editBtn">Ubah</button>
+        </div>
+        <p class="empty" id="empty" hidden>Data profil belum diisi.</p>
+        <dl class="rows" id="view"></dl>
+        <form id="form" novalidate hidden>
+          <div id="fields"></div>
+          <div class="actions">
+            <button type="submit" class="btn btn-green" id="saveBtn">Simpan</button>
+            <button type="button" class="btn btn-outline" id="cancelBtn">Batal</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="ttlAkun">
+        <div class="card-head"><h2 id="ttlAkun">Informasi Akun</h2></div>
+        <dl class="rows">
+          <div class="row"><dt>Email</dt><dd id="accEmail"></dd></div>
+          <div class="row"><dt>Username</dt><dd id="accUser"></dd></div>
+        </dl>
+      </section>
+
+      <p class="note">Verifikasi akun sebagai Volunteer atau Organizer akan tersedia pada pembaruan berikutnya.</p>
+    </div>
+  </main>
+
+  <script src="assets/volunova-app.js"></script>
+  <script>
+    var FIELDS = [
+      { k: 'nama_lengkap', l: 'Nama lengkap', t: 'text', p: 'Contoh: Budi Santoso', a: 'name' },
+      { k: 'nim', l: 'NIM', t: 'text', p: 'Contoh: 103012400095', a: 'off' },
+      { k: 'universitas', l: 'Universitas', t: 'text', p: 'Contoh: Telkom University', a: 'organization' },
+      { k: 'jurusan', l: 'Jurusan', t: 'text', p: 'Contoh: Informatika', a: 'off' },
+      { k: 'telepon', l: 'Nomor telepon', t: 'tel', p: 'Contoh: 081234567890', a: 'tel' },
+      { k: 'domisili', l: 'Domisili', t: 'text', p: 'Contoh: Bandung', a: 'address-level2' }
+    ];
+
+    // Aturan sama persis dengan validasi di server (ProfileController)
+    function validate(v) {
+      var e = {}, n;
+      if (!v.nama_lengkap) e.nama_lengkap = 'Nama lengkap wajib diisi.';
+      else if (!/^[A-Za-z .'\-]{3,50}$/.test(v.nama_lengkap)) e.nama_lengkap = 'Nama lengkap 3-50 karakter dan hanya berisi huruf, spasi, titik, apostrof, atau tanda hubung.';
+      if (!v.nim) e.nim = 'NIM wajib diisi.';
+      else if (!/^[0-9]{8,15}$/.test(v.nim)) e.nim = 'NIM harus berupa 8-15 angka.';
+      [['universitas', 'Universitas'], ['jurusan', 'Jurusan']].forEach(function (x) {
+        n = v[x[0]].length;
+        if (n === 0) e[x[0]] = x[1] + ' wajib diisi.';
+        else if (n < 3 || n > 60) e[x[0]] = x[1] + ' harus 3-60 karakter.';
+      });
+      if (!v.telepon) e.telepon = 'Nomor telepon wajib diisi.';
+      else if (!/^08[0-9]{8,11}$/.test(v.telepon)) e.telepon = 'Nomor telepon harus diawali 08 dan terdiri dari 10-13 angka.';
+      n = v.domisili.length;
+      if (n === 0) e.domisili = 'Domisili wajib diisi.';
+      else if (n < 3 || n > 50) e.domisili = 'Domisili harus 3-50 karakter.';
+      return e;
+    }
+
+    Volunova.init({
+      active: 'profile',
+      onReady: function () {
+        var el = Volunova.el, $ = function (id) { return document.getElementById(id); };
+        var form = $('form'), fields = $('fields'), notice = $('notice'), state = { profile: null, account: {} };
+
+        // bangun kolom form sekali
+        FIELDS.forEach(function (f) {
+          var box = el('div', 'field');
+          var lab = el('label', '', f.l); lab.setAttribute('for', 'f_' + f.k);
+          var inp = el('input'); inp.id = 'f_' + f.k; inp.name = f.k; inp.type = f.t; inp.placeholder = f.p; inp.autocomplete = f.a;
+          var err = el('p', 'error'); err.id = 'e_' + f.k; err.setAttribute('role', 'alert');
+          box.appendChild(lab); box.appendChild(inp); box.appendChild(err); fields.appendChild(box);
+        });
+
+        function setErrors(errs) {
+          FIELDS.forEach(function (f) {
+            var inp = $('f_' + f.k), msg = errs[f.k] || '';
+            $('e_' + f.k).textContent = msg;
+            if (msg) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid');
+          });
+        }
+        function values() {
+          var v = {};
+          FIELDS.forEach(function (f) { v[f.k] = $('f_' + f.k).value.trim(); });
+          return v;
+        }
+        function showNotice(msg) { notice.textContent = msg || ''; notice.hidden = !msg; }
+
+        function renderHead() {
+          var p = state.profile, name = (p && p.nama_lengkap) || state.account.username || '';
+          $('pName').textContent = name;
+          $('pEmail').textContent = state.account.email || '';
+          $('avatar').textContent = name.split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase() || '?';
+          $('accEmail').textContent = state.account.email || '';
+          $('accUser').textContent = state.account.username || '';
+          var b = $('badges'); b.textContent = '';
+          [[p ? 'Profil lengkap' : 'Profil belum lengkap', p ? 'ok' : 'warn'], ['Belum terverifikasi', ''], ['Peran belum dipilih', '']].forEach(function (x) {
+            b.appendChild(el('span', 'badge ' + x[1], x[0]));
+          });
+        }
+        function renderView() {
+          var view = $('view'), p = state.profile; view.textContent = '';
+          if (p) FIELDS.forEach(function (f) {
+            var row = el('div', 'row'); row.appendChild(el('dt', '', f.l)); row.appendChild(el('dd', '', p[f.k] || '-')); view.appendChild(row);
+          });
+          $('empty').hidden = !!p;
+        }
+        function openForm() {
+          var p = state.profile || {};
+          FIELDS.forEach(function (f) { $('f_' + f.k).value = p[f.k] || ''; });
+          setErrors({});
+          form.hidden = false; $('view').hidden = true; $('empty').hidden = true; $('editBtn').hidden = true;
+          $('cancelBtn').hidden = !state.profile;
+        }
+        function closeForm() {
+          form.hidden = true; $('view').hidden = false; $('editBtn').hidden = false; $('empty').hidden = !!state.profile;
+        }
+        function render() {
+          renderHead(); renderView();
+          showNotice(state.profile ? '' : 'Profil Anda belum lengkap. Isi semua kolom di bawah ini lalu tekan Simpan.');
+          if (state.profile) closeForm(); else openForm();
+        }
+
+        $('editBtn').addEventListener('click', openForm);
+        $('cancelBtn').addEventListener('click', function () { closeForm(); });
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var v = values(), errs = validate(v);
+          setErrors(errs);
+          if (Object.keys(errs).length) { showNotice('Data profil belum valid. Periksa kolom yang ditandai.'); return; }
+          showNotice('');
+          var btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'Menyimpan...';
+          fetch('profile.php', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d && d.ok) { state.profile = d.profile; render(); Volunova.toast(d.message); return; }
+              if (d && d.errors) setErrors(d.errors);
+              showNotice((d && d.message) || 'Gagal menyimpan profil.');
+            }, function () { showNotice('Tidak dapat terhubung ke server.'); })
+            .then(function () { btn.disabled = false; btn.textContent = 'Simpan'; });
+        });
+
+        // muat data profil
+        fetch('profile.php', { credentials: 'same-origin' })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (!d || !d.ok) { showNotice((d && d.message) || 'Gagal memuat profil.'); return; }
+            state.account = d.account || {}; state.profile = d.profile || null; render();
+          }, function () { showNotice('Tidak dapat terhubung ke server.'); });
+      }
+    });
+  </script>
+</body>
+</html>

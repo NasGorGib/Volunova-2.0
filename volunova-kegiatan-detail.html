@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLUNOVA | Detail Kegiatan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/volunova-app.css">
+</head>
+<body class="pending">
+  <main class="main">
+    <div class="container">
+      <p class="crumb"><a href="volunova-home.html">Beranda</a> &rsaquo; <a href="volunova-kegiatan.html">Daftar Kegiatan</a> &rsaquo; Detail</p>
+      <div id="detail"></div>
+    </div>
+  </main>
+
+  <script src="assets/volunova-app.js"></script>
+  <script>
+    Volunova.init({
+      onReady: function () {
+        var el = Volunova.el, box = document.getElementById('detail');
+        var id = new URLSearchParams(window.location.search).get('id');
+        var a = Volunova.activities.filter(function (x) { return String(x.id) === id; })[0];
+
+        if (!a) {
+          box.appendChild(el('h1', '', 'Kegiatan tidak ditemukan'));
+          box.appendChild(el('p', 'lead', 'Kegiatan yang kamu cari tidak tersedia atau sudah dihapus.'));
+          var back = el('a', 'btn btn-green', 'Kembali ke Daftar Kegiatan');
+          back.href = 'volunova-kegiatan.html';
+          box.appendChild(back);
+          return;
+        }
+
+        document.title = 'VOLUNOVA | ' + a.judul;
+        box.appendChild(el('h1', '', a.judul));
+
+        var card = el('section', 'card detail');
+        card.appendChild(el('h2', '', 'Informasi Kegiatan'));
+        var dl = el('dl', 'info');
+        [['Tanggal', a.tanggal], ['Waktu', a.waktu], ['Lokasi', a.lokasi], ['Kuota', a.kuota], ['Penyelenggara', a.penyelenggara]]
+          .forEach(function (r) { dl.appendChild(el('dt', '', r[0])); dl.appendChild(el('dd', '', r[1])); });
+        card.appendChild(dl);
+
+        card.appendChild(el('h2', '', 'Deskripsi'));
+        a.deskripsi.forEach(function (p) { card.appendChild(el('p', '', p)); });
+        box.appendChild(card);
+
+        var alertBox = el('div', 'alert');
+        alertBox.setAttribute('role', 'alert');
+        alertBox.hidden = true;
+        box.appendChild(alertBox);
+
+        var actions = el('div', 'actions');
+        var daftar = el('button', 'btn btn-green', 'Daftar Kegiatan Ini');
+        daftar.type = 'button';
+        daftar.addEventListener('click', function () {
+          alertBox.hidden = true;
+          daftar.disabled = true;
+          fetch('daftar_kegiatan.php', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activity_id: a.id })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d && d.ok) { Volunova.toast(d.message || 'Pendaftaran berhasil.'); return; }
+              alertBox.textContent = (d && d.message) || 'Pendaftaran gagal.';
+              if (d && d.code === 'PROFILE_INCOMPLETE') {
+                var link = el('a', '', ' Lengkapi profil sekarang');
+                link.href = 'volunova-profile.html';
+                link.style.textDecoration = 'underline';
+                alertBox.appendChild(link);
+              }
+              alertBox.hidden = false;
+            }, function () {
+              alertBox.textContent = 'Tidak dapat terhubung ke server.';
+              alertBox.hidden = false;
+            })
+            .then(function () { daftar.disabled = false; });
+        });
+        actions.appendChild(daftar);
+
+        var back2 = el('a', 'btn btn-outline', 'Kembali ke Daftar Kegiatan');
+        back2.href = 'volunova-kegiatan.html';
+        actions.appendChild(back2);
+        box.appendChild(actions);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLUNOVA | Daftar Kegiatan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/volunova-app.css">
+</head>
+<body class="pending">
+  <main class="main">
+    <div class="container">
+      <p class="crumb"><a href="volunova-home.html">Beranda</a> &rsaquo; Daftar Kegiatan</p>
+      <h1>Daftar Kegiatan</h1>
+      <p class="lead">Kegiatan volunteering yang tersedia untuk kamu.</p>
+      <div id="list"></div>
+    </div>
+  </main>
+
+  <script src="assets/volunova-app.js"></script>
+  <script>
+    Volunova.init({
+      onReady: function () {
+        var el = Volunova.el, list = document.getElementById('list');
+        Volunova.activities.forEach(function (a) {
+          var card = el('article', 'card');
+          card.appendChild(el('h2', '', a.judul));
+          var chips = el('div', 'chips');
+          ['Tanggal: ' + a.tanggal, 'Lokasi: ' + a.lokasi, 'Kuota: ' + a.kuota].forEach(function (t) {
+            chips.appendChild(el('span', 'chip', t));
+          });
+          card.appendChild(chips);
+          card.appendChild(el('p', '', a.ringkas));
+          var btn = el('a', 'btn btn-green', 'Activity Detail');
+          btn.href = 'volunova-kegiatan-detail.html?id=' + encodeURIComponent(a.id);
+          card.appendChild(btn);
+          list.appendChild(card);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
