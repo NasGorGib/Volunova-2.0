@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLUNOVA | Beranda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/volunova-app.css">
+</head>
+<body class="pending">
+  <main class="main">
+    <div class="container">
+      <p class="eyebrow">Beranda</p>
+      <h1>Selamat datang, <span id="userName"></span></h1>
+      <p class="lead">Pilih menu di bawah ini, atau gunakan menu di samping untuk berpindah halaman.</p>
+
+      <section class="card menu-card" aria-labelledby="menuKegiatan">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        </div>
+        <div class="body">
+          <h2 id="menuKegiatan">Daftar Kegiatan</h2>
+          <p>Lihat kegiatan volunteering yang tersedia dan buka detail tiap kegiatan.</p>
+          <a class="btn btn-green" href="volunova-kegiatan.html">Buka Daftar Kegiatan</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/volunova-app.js"></script>
+  <script>
+    Volunova.init({
+      active: 'home',
+      onReady: function (user) {
+        document.getElementById('userName').textContent = user.nama || '';
+      }
+    });
+  </script>
+</body>
+</html>

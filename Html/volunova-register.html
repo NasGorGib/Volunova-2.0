@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLUNOVA | Daftar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f8a4c;
+    --green-dark: #166a3a;
+    --green-soft: #e8f5ed;
+    --text: #17241c;
+    --muted: #5f6f65;
+    --line: #cfe0d5;
+    --danger: #c62d3d;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #ffffff;
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+  }
+  .card { width: 100%; max-width: 400px; }
+  .brand { display: flex; align-items: center; gap: .65rem; margin-bottom: 2.5rem; }
+  .brand svg { width: 36px; height: 36px; }
+  .brand span { font-weight: 800; font-size: 1.5rem; letter-spacing: .08em; color: var(--green); }
+  h1 { font-size: 1.75rem; letter-spacing: -0.02em; margin: 0 0 .5rem; }
+  .sub { color: var(--muted); margin: 0 0 2rem; }
+  .field { margin-bottom: 1.25rem; }
+  label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: .4rem; }
+  .input-wrap { position: relative; }
+  input[type=text], input[type=email], input[type=password] {
+    width: 100%;
+    padding: .8rem .95rem;
+    font: inherit;
+    color: var(--text);
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+  }
+  input:focus { border-color: var(--green); }
+  input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 3px solid rgba(31, 138, 76, .35);
+    outline-offset: 2px;
+  }
+  input[aria-invalid=true] { border-color: var(--danger); }
+  .toggle {
+    position: absolute; right: .5rem; top: 50%; transform: translateY(-50%);
+    background: none; border: 0; color: var(--green); font: inherit; font-size: .85rem; font-weight: 600;
+    cursor: pointer; padding: .4rem .6rem; border-radius: 6px;
+  }
+  .error { color: var(--danger); font-size: .85rem; margin: .4rem 0 0; min-height: 1.2em; }
+  .row { display: flex; justify-content: space-between; align-items: center; font-size: .875rem; margin-bottom: 1.5rem; }
+  .row label { display: flex; align-items: center; gap: .5rem; font-weight: 500; margin: 0; cursor: pointer; }
+  input[type=checkbox] { accent-color: var(--green); width: 1rem; height: 1rem; }
+  a { color: var(--green); text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+  .submit {
+    width: 100%; padding: .9rem; font: inherit; font-weight: 700; cursor: pointer;
+    background: var(--green); color: #fff; border: 0; border-radius: 10px;
+  }
+  .submit:hover:not(:disabled) { background: var(--green-dark); }
+  .submit:disabled { opacity: .65; cursor: progress; }
+  .status { margin-top: 1rem; font-size: .9rem; min-height: 1.3em; }
+  .status.ok { color: var(--green); }
+  .status.fail { color: var(--danger); }
+  .foot { margin-top: 2rem; text-align: center; color: var(--muted); font-size: .9rem; }
+  .hint { color: var(--muted); font-size: .8rem; margin: .35rem 0 0; }
+  .card.wide { max-width: 420px; }
+  /* Panel hijau kiri & kanan */
+  body { min-height: 100%; position: relative; overflow-x: hidden; }
+  .side {
+    position: fixed; top: 0; bottom: 0; width: clamp(110px, 20vw, 300px);
+    background: linear-gradient(160deg, #2aa862 0%, var(--green) 55%, var(--green-dark) 100%);
+    overflow: hidden; z-index: 0; pointer-events: none;
+  }
+  .side.left  { left: 0;  border-radius: 0 140px 140px 0; }
+  .side.right { right: 0; border-radius: 140px 0 0 140px; }
+  .side::before, .side::after { content: ""; position: absolute; border-radius: 50%; background: rgba(255,255,255,.12); }
+  .side::before { width: 220px; height: 220px; top: -70px; }
+  .side::after  { width: 300px; height: 300px; bottom: -120px; }
+  .side.left::before  { left: -90px; }
+  .side.left::after   { right: -150px; }
+  .side.right::before { right: -90px; }
+  .side.right::after  { left: -150px; }
+  .card { position: relative; z-index: 1; }
+  @media (max-width: 720px) { .side { display: none; } }
+  /* Kotak form: dalam putih, outline hijau */
+  .card {
+    max-width: 460px; padding: 2.25rem 2rem;
+    background: #fff; border: 2px solid var(--green); border-radius: 22px;
+    box-shadow: 0 0 0 6px var(--green-soft);
+  }
+  .card.wide { max-width: 500px; }
+  .brand { margin-bottom: 2rem; }
+  @media (max-width: 480px) { .card { padding: 1.75rem 1.25rem; box-shadow: none; } }
+</style>
+</head>
+<body>
+  <div class="side left" aria-hidden="true"></div>
+  <div class="side right" aria-hidden="true"></div>
+  <div class="card wide">
+    <div class="brand">
+      <svg viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r="18" fill="#1f8a4c"/>
+        <path d="M10 12l8 14 8-14" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>VOLUNOVA</span>
+    </div>
+
+    <h1>Buat akun baru</h1>
+    <p class="sub">Daftar untuk mulai mencari atau mengelola kegiatan volunteering.</p>
+
+    <!-- Nanti di Laravel: <form method="POST" action="{{ route('store') }}"> + @csrf -->
+    <form id="regForm" novalidate>
+      <div class="field">
+        <label for="name">Username</label>
+        <input type="text" id="name" name="name" autocomplete="username" placeholder="Contoh: budi_santoso" required>
+        <p class="hint">6-30 karakter: huruf, angka, dan underscore.</p>
+        <p class="error" id="nameError" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" placeholder="nama@email.com" required>
+        <p class="error" id="emailError" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="password">Kata sandi</label>
+        <div class="input-wrap">
+          <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Buat kata sandi" required>
+          <button type="button" class="toggle" id="toggle1" aria-label="Tampilkan kata sandi">Tampilkan</button>
+        </div>
+        <p class="hint">Minimal 8 karakter, tanpa spasi, ada huruf kapital dan karakter spesial.</p>
+        <p class="error" id="passwordError" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="password_confirmation">Konfirmasi kata sandi</label>
+        <div class="input-wrap">
+          <input type="password" id="password_confirmation" name="password_confirmation" autocomplete="new-password" placeholder="Ulangi kata sandi" required>
+          <button type="button" class="toggle" id="toggle2" aria-label="Tampilkan kata sandi">Tampilkan</button>
+        </div>
+        <p class="error" id="confirmError" role="alert"></p>
+      </div>
+
+      <button type="submit" class="submit" id="submitBtn">Daftar</button>
+      <p class="status" id="status" aria-live="polite"></p>
+    </form>
+
+    <p class="foot">Sudah punya akun? <a href="volunova-login.html">Masuk</a></p>
+  </div>
+
+<script>
+  function bindToggle(btnId, inputId) {
+    const b = document.getElementById(btnId), i = document.getElementById(inputId);
+    b.addEventListener('click', () => {
+      const show = i.type === 'password';
+      i.type = show ? 'text' : 'password';
+      b.textContent = show ? 'Sembunyikan' : 'Tampilkan';
+      b.setAttribute('aria-label', show ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    });
+  }
+  bindToggle('toggle1', 'password');
+  bindToggle('toggle2', 'password_confirmation');
+
+  const $ = (id) => document.getElementById(id);
+  const form = $('regForm'), status = $('status'), btn = $('submitBtn');
+
+  function setError(input, el, msg) {
+    el.textContent = msg;
+    if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    return !msg;
+  }
+
+  function validate() {
+    const name = $('name').value.trim();
+    const email = $('email').value.trim();
+    const pw = $('password').value;
+    const cf = $('password_confirmation').value;
+
+    let nMsg = '';
+    if (!name) nMsg = 'Username wajib diisi.';
+    else if (name.length < 6) nMsg = 'Username minimal 6 karakter.';
+    else if (name.length > 30) nMsg = 'Username maksimal 30 karakter.';
+    else if (!/^[A-Za-z0-9_]+$/.test(name)) nMsg = 'Gunakan hanya huruf, angka, dan underscore.';
+
+    let eMsg = '';
+    if (!email) eMsg = 'Email wajib diisi.';
+    else if (!/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(email)) eMsg = 'Format email tidak valid.';
+
+    let pMsg = '';
+    if (!pw) pMsg = 'Kata sandi wajib diisi.';
+    else if (pw.length < 8) pMsg = 'Kata sandi minimal 8 karakter.';
+    else if (/\s/.test(pw) || !/[A-Z]/.test(pw) || !/[^A-Za-z0-9\s]/.test(pw))
+      pMsg = 'Kata sandi tidak boleh berisi spasi, harus ada huruf kapital dan karakter spesial.';
+
+    let cMsg = '';
+    if (!cf) cMsg = 'Konfirmasi kata sandi wajib diisi.';
+    else if (cf !== pw) cMsg = 'Konfirmasi kata sandi tidak cocok.';
+
+    const r = [
+      setError($('name'), $('nameError'), nMsg),
+      setError($('email'), $('emailError'), eMsg),
+      setError($('password'), $('passwordError'), pMsg),
+      setError($('password_confirmation'), $('confirmError'), cMsg)
+    ];
+    return r.every(Boolean);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = '';
+    status.className = 'status';
+    if (!validate()) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+    let ok = false, msg = 'Gagal mendaftar.';
+    try {
+      const res = await fetch('register.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: $('name').value.trim(),
+          email: $('email').value.trim(),
+          password: $('password').value,
+          password_confirmation: $('password_confirmation').value
+        })
+      });
+      const data = await res.json();
+      ok = data.ok;
+      if (data.message) msg = data.message;
+    } catch (err) {
+      msg = 'Tidak dapat terhubung ke server.';
+    }
+
+    status.textContent = msg;
+    status.classList.add(ok ? 'ok' : 'fail');
+    if (ok) {
+      setTimeout(() => { window.location.href = 'volunova-login.html'; }, 1500);
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Daftar';
+  });
+</script>
+</body>
+</html>
